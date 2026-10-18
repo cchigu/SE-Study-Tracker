@@ -5,6 +5,11 @@ import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 import 'screens/home_shell.dart';
 import 'services/session_store.dart';
+import 'services/study_notification.dart';
+
+// Kept alive for the whole app run.
+// ignore: unused_element
+AppLifecycleListener? _lifecycle;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +17,13 @@ Future<void> main() async {
 
   final store = SessionStore();
   await store.load();
+
+  // "Time studied today" notification: refresh on every change, and when the
+  // app comes back to the front (in case the day rolled over).
+  await StudyNotification.init();
+  store.addListener(() => StudyNotification.sync(store));
+  _lifecycle = AppLifecycleListener(onResume: () => StudyNotification.sync(store));
+  await StudyNotification.sync(store);
 
   // Firebase remembers who's signed in, so this fires right away on launch
   // with the saved user (or null), and again on every sign in / sign out.
