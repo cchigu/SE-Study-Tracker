@@ -92,3 +92,58 @@ String pageTitle(List<Bucket> buckets) {
   final years = first.year == last.year ? '${last.year}' : '${first.year}–${last.year}';
   return '${md(first)} – ${md(last)}, $years';
 }
+
+/// Average study per day, counting days with no study as 0.
+class Averages {
+  final DateTime? since; // first day with any study
+  final int weekdayCount; // Mon–Fri days since then (including today)
+  final int weekendCount; // Sat–Sun days since then (including today)
+  final Duration? weekday; // null when there are no days of that kind yet
+  final Duration? weekend;
+  final Duration? everyDay;
+
+  const Averages({
+    this.since,
+    this.weekdayCount = 0,
+    this.weekendCount = 0,
+    this.weekday,
+    this.weekend,
+    this.everyDay,
+  });
+
+  int get dayCount => weekdayCount + weekendCount;
+}
+
+bool isWeekend(DateTime d) => d.weekday == DateTime.saturday || d.weekday == DateTime.sunday;
+
+Averages computeAverages(Map<DateTime, Duration> totals, DateTime today) {
+  final studiedDays = totals.entries.where((e) => e.value > Duration.zero).map((e) => e.key);
+  if (studiedDays.isEmpty) return const Averages();
+
+  final since = studiedDays.reduce((a, b) => a.isBefore(b) ? a : b);
+  var weekdaySum = Duration.zero, weekendSum = Duration.zero;
+  var weekdayCount = 0, weekendCount = 0;
+
+  for (var d = since; !d.isAfter(today); d = DateTime(d.year, d.month, d.day + 1)) {
+    final t = totals[d] ?? Duration.zero;
+    if (isWeekend(d)) {
+      weekendSum += t;
+      weekendCount++;
+    } else {
+      weekdaySum += t;
+      weekdayCount++;
+    }
+  }
+
+  Duration? avg(Duration sum, int n) =>
+      n == 0 ? null : Duration(seconds: (sum.inSeconds / n).round());
+
+  return Averages(
+    since: since,
+    weekdayCount: weekdayCount,
+    weekendCount: weekendCount,
+    weekday: avg(weekdaySum, weekdayCount),
+    weekend: avg(weekendSum, weekendCount),
+    everyDay: avg(weekdaySum + weekendSum, weekdayCount + weekendCount),
+  );
+}

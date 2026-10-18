@@ -44,7 +44,7 @@ class StudyBarChart extends StatelessWidget {
     const axisWidth = 36.0;
     const labelHeight = 33.0;
     const topPad = 8.0;
-    final plotHeight = height - labelHeight - topPad;
+    final plotHeight = height - labelHeight - topPad - 1; // 1 = baseline
 
     double yFor(double value) => topPad + plotHeight - plotHeight * (value / yMax);
 

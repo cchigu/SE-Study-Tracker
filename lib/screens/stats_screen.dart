@@ -50,6 +50,7 @@ class _StatsScreenState extends State<StatsScreen> {
           final thisMonth = sumBetween(totals, monthStart, DateTime(monthStart.year, monthStart.month + 1));
 
           final buckets = buildBuckets(totals, _range, _page, today);
+          final averages = computeAverages(totals, today);
 
           // Bar heights: either each period's own total, or the running total so far.
           final values = <Duration>[];
@@ -76,6 +77,41 @@ class _StatsScreenState extends State<StatsScreen> {
                 ],
               ),
               const SizedBox(height: 20),
+
+              // Averages (days with no study count as 0)
+              Text('Average per day', style: theme.textTheme.titleMedium),
+              const SizedBox(height: 2),
+              Text(
+                averages.since == null
+                    ? 'Log a session to start your averages.'
+                    : 'Since ${formatLongDate(averages.since!)} · '
+                        '${averages.dayCount} ${averages.dayCount == 1 ? 'day' : 'days'}',
+                style: theme.textTheme.bodySmall,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _AverageCard(
+                    label: 'Weekdays',
+                    detail: 'Mon–Fri',
+                    value: averages.weekday,
+                  ),
+                  const SizedBox(width: 8),
+                  _AverageCard(
+                    label: 'Weekends',
+                    detail: 'Sat–Sun',
+                    value: averages.weekend,
+                  ),
+                  const SizedBox(width: 8),
+                  _AverageCard(
+                    label: 'Every day',
+                    detail: 'All days',
+                    value: averages.everyDay,
+                    highlight: true,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
 
               // Daily / Weekly / Monthly toggle
               SegmentedButton<ChartRange>(
@@ -175,6 +211,54 @@ class _SummaryCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(label, style: theme.textTheme.bodySmall),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AverageCard extends StatelessWidget {
+  final String label;
+  final String detail;
+  final Duration? value; // null = no days of this kind yet
+  final bool highlight;
+
+  const _AverageCard({
+    required this.label,
+    required this.detail,
+    required this.value,
+    this.highlight = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final fg = highlight ? scheme.onPrimaryContainer : scheme.onSurface;
+
+    return Expanded(
+      child: Card(
+        color: highlight ? scheme.primaryContainer : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          child: Column(
+            children: [
+              Text(label,
+                  style: theme.textTheme.labelLarge?.copyWith(color: fg)),
+              const SizedBox(height: 6),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  value == null ? '—' : formatHoursMinutes(value!),
+                  style: theme.textTheme.titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w600, color: fg),
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(detail,
+                  style: theme.textTheme.bodySmall?.copyWith(color: fg.withValues(alpha: 0.7))),
             ],
           ),
         ),
