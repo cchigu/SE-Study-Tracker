@@ -59,6 +59,34 @@ class SessionStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Add a session by hand (e.g. forgot to hit Start).
+  Future<void> addSession(DateTime start, DateTime end) async {
+    _sessions.addAll(StudySession.splitByDay(start, end));
+    await _saveSessions();
+    notifyListeners();
+  }
+
+  /// Change the start/end of an existing session.
+  Future<void> updateSession(String id, DateTime start, DateTime end) async {
+    _sessions.removeWhere((s) => s.id == id);
+    _sessions.addAll(StudySession.splitByDay(start, end));
+    await _saveSessions();
+    notifyListeners();
+  }
+
+  /// True if [start]–[end] overlaps a saved session (other than [ignoreId])
+  /// or the timer that's running right now.
+  bool overlaps(DateTime start, DateTime end, {String? ignoreId}) {
+    for (final s in _sessions) {
+      if (s.id == ignoreId) continue;
+      if (start.isBefore(s.end) && end.isAfter(s.start)) return true;
+    }
+    if (_activeStart != null) {
+      if (start.isBefore(DateTime.now()) && end.isAfter(_activeStart!)) return true;
+    }
+    return false;
+  }
+
   Future<void> delete(String id) async {
     _sessions.removeWhere((s) => s.id == id);
     await _saveSessions();

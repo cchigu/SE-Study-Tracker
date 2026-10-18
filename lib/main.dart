@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/timer_screen.dart';
+import 'screens/home_shell.dart';
 import 'services/session_store.dart';
 
 Future<void> main() async {
@@ -26,7 +26,7 @@ class SeStudyApp extends StatelessWidget {
         brightness: Brightness.dark,
         useMaterial3: true,
       ),
-      home: TimerScreen(store: store),
+      home: HomeShell(store: store),
     );
   }
 }

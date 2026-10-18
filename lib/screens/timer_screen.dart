@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../services/session_store.dart';
 import '../utils/format.dart';
+import '../widgets/session_editor.dart';
 
 class TimerScreen extends StatefulWidget {
   final SessionStore store;
@@ -116,9 +117,11 @@ class _TimerScreenState extends State<TimerScreen> {
                       leading: const Icon(Icons.timer_outlined),
                       title: Text('${formatTime(s.start)} – ${formatTime(s.end)}'),
                       trailing: Text(formatHoursMinutes(s.duration)),
+                      onTap: () =>
+                          showSessionEditor(context, store: store, day: s.day, existing: s),
                     ),
                   ),
-                Text('Swipe left on a session to delete it.',
+                Text('Tap a session to edit it, swipe left to delete.',
                     style: theme.textTheme.bodySmall, textAlign: TextAlign.center),
               ],
             ],
