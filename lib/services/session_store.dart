@@ -114,6 +114,22 @@ class SessionStore extends ChangeNotifier {
     return total;
   }
 
+  /// Study time per calendar day (local midnight → total), including the
+  /// running timer. Days with no study are left out.
+  Map<DateTime, Duration> dailyTotals({DateTime? now}) {
+    final totals = <DateTime, Duration>{};
+    void addPiece(StudySession s) =>
+        totals[s.day] = (totals[s.day] ?? Duration.zero) + s.duration;
+
+    for (final s in _sessions) {
+      addPiece(s);
+    }
+    if (_activeStart != null) {
+      StudySession.splitByDay(_activeStart!, now ?? DateTime.now()).forEach(addPiece);
+    }
+    return totals;
+  }
+
   Future<void> _saveSessions() =>
       _prefs.setString(_sessionsKey, jsonEncode(_sessions.map((s) => s.toJson()).toList()));
 }
