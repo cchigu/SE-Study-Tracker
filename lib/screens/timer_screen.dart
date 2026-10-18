@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../services/session_store.dart';
 import '../utils/format.dart';
 import '../widgets/session_editor.dart';
+import 'profile_screen.dart';
 
 class TimerScreen extends StatefulWidget {
   final SessionStore store;
@@ -49,7 +50,10 @@ class _TimerScreenState extends State<TimerScreen> {
         final todaySessions = store.sessionsOn(now).reversed.toList();
 
         return Scaffold(
-          appBar: AppBar(title: const Text('SE Exam Study Tracker')),
+          appBar: AppBar(
+            title: const Text('SE Exam Study Tracker'),
+            actions: [AccountButton(store: store), const SizedBox(width: 4)],
+          ),
           body: ListView(
             padding: const EdgeInsets.all(24),
             children: [

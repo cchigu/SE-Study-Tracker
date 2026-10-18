@@ -4,6 +4,7 @@ import '../services/session_store.dart';
 import '../services/stats.dart';
 import '../utils/format.dart';
 import '../widgets/study_bar_chart.dart';
+import 'profile_screen.dart';
 
 class StatsScreen extends StatefulWidget {
   final SessionStore store;
@@ -35,7 +36,10 @@ class _StatsScreenState extends State<StatsScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Stats')),
+      appBar: AppBar(
+        title: const Text('Stats'),
+        actions: [AccountButton(store: widget.store), const SizedBox(width: 4)],
+      ),
       body: ListenableBuilder(
         listenable: widget.store,
         builder: (context, _) {

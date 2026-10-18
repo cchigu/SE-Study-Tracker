@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/session_store.dart';
 import '../utils/format.dart';
 import '../widgets/session_editor.dart';
+import 'profile_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   final SessionStore store;
@@ -46,7 +47,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calendar'),
-        actions: [TextButton(onPressed: _goToToday, child: const Text('Today'))],
+        actions: [
+          TextButton(onPressed: _goToToday, child: const Text('Today')),
+          AccountButton(store: store),
+          const SizedBox(width: 4),
+        ],
       ),
       body: ListenableBuilder(
         listenable: store,

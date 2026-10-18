@@ -8,7 +8,7 @@ A Flutter app for tracking how much time I study for the SE Exam.
 - [x] **2. Bottom tabs + calendar view.** Daily totals on a calendar; tap a day to see, add or edit sessions.
 - [x] **3. Stats tab.** Cumulative and weekly totals, with a chart toggled daily / weekly / monthly.
 - [x] **4. Averages.** Weekday, weekend (Sat + Sun), and all-days averages.
-- [ ] **5. Firebase.** Email + Google login, profile icon, cloud sync.
+- [x] **5. Firebase.** Email + Google login, profile icon, cloud sync.
 
 ## First-time setup
 
